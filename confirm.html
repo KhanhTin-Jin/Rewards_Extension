@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhắc nhở Rewards Helper</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f8fafc;
+      margin: 0;
+      color: #0f172a;
+    }
+    h2 { color: #4f46e5; margin-bottom: 10px; }
+    p { margin-bottom: 25px; color: #475569; }
+    .btn-group { display: flex; justify-content: center; gap: 15px; }
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #acceptBtn {
+      background-color: #10b981;
+      color: white;
+    }
+    #acceptBtn:hover { background-color: #059669; }
+    #cancelBtn {
+      background-color: #e2e8f0;
+      color: #475569;
+    }
+    #cancelBtn:hover { background-color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <h2>Đến giờ tìm điểm!</h2>
+  <p>Đã đến thời gian bạn hẹn giờ chạy tự động. Bạn có muốn khởi chạy tìm kiếm ngầm từ bây giờ không?</p>
+  <div class="btn-group">
+    <button id="acceptBtn">Bắt đầu ngay</button>
+    <button id="cancelBtn">Bỏ qua</button>
+  </div>
+  <script src="confirm.js"></script>
+</body>
+</html>

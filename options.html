@@ -311,6 +311,7 @@
       <ul>
         <li><a href="#" data-section="general" class="active">🛠 Cài đặt chung</a></li>
         <li><a href="#" data-section="topics">📝 Chủ đề tùy chỉnh</a></li>
+        <li><a href="#" data-section="schedule">⏳ Lên lịch</a></li>
         <li><a href="#" data-section="logs">🕒 Nhật ký</a></li>
         <li><a href="#" data-section="about">ℹ️ Giới thiệu</a></li>
       </ul>
@@ -357,6 +358,40 @@
       <div class="form-group">
         <label for="customTopicsFile">Hoặc tải lên danh sách từ tệp (.txt):</label>
         <input type="file" id="customTopicsFile" accept=".txt">
+      </div>
+    </div>
+
+    <div id="schedule" class="content-section">
+      <h1>Lên lịch tự động chạy ngầm</h1>
+      
+      <div class="form-group">
+        <label style="display:flex; align-items:center; cursor:pointer;">
+          <input type="checkbox" id="enableSchedule" style="width: 20px; height: 20px; margin: 0 10px 0 0; accent-color: var(--primary);"> 
+          Bật nhắc nhở chạy tự động
+        </label>
+        <div class="help-text">Gửi thông báo hỏi người dùng trước khi bắt đầu tìm kiếm khi đến giờ hẹn (chỉ hoạt động khi thiết bị và Edge đang mở).</div>
+      </div>
+      
+      <div class="form-group" id="scheduleSettingsDiv">
+        <label for="scheduleFrequency">Tần suất</label>
+        <select id="scheduleFrequency" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; margin-bottom: 20px; transition: all 0.2s ease; background-color: var(--background);">
+          <option value="daily">1 Ngày</option>
+          <option value="weekly">1 Tuần</option>
+          <option value="monthly">1 Tháng</option>
+          <option value="yearly">1 Năm</option>
+        </select>
+        
+        <label for="scheduleTime">Ngày và Giờ bắt đầu nhắc nhở</label>
+        <input type="datetime-local" id="scheduleTime" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; margin-bottom: 20px; background-color: var(--background);">
+        
+        <label for="scheduleDelaySeconds">Thời gian chờ (delay) khi chạy ngầm (giây)</label>
+        <input type="number" id="scheduleDelaySeconds" min="1" value="10">
+        <div class="help-text">Áp dụng riêng cho các phiên chạy tự động từ lịch trình, ghi đè delay trong cài đặt chung.</div>
+      </div>
+      
+      <div style="display:flex; gap: 10px; margin-top: 20px;">
+        <button id="saveSchedule">Lưu cấu hình lịch</button>
+        <button id="testNotificationBtn" class="btn-outline">Thử Notification Ngay</button>
       </div>
     </div>
 

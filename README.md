@@ -8,8 +8,7 @@ Một tiện ích mở rộng cho trình duyệt Chrome giúp tự động hóa 
 
 ## ✨ Tính năng nổi bật
 
-- ✨ **Lên lịch hàng ngày:** Tự động chạy vào một thời điểm cố định mỗi ngày mà không cần can thiệp thủ công.
-  
+- ✨ **Lên lịch thông minh:** Tự động hẹn giờ chạy ngâm theo chu kỳ linh hoạt (1 ngày, 1 tuần, 1 tháng, 1 năm). Tới giờ hệ thống sẽ hiển thị pop-up thông báo để người dùng xác nhận chạy tìm kiếm (yêu cầu trình duyệt đang mở).
 - **Tự động tìm kiếm:** Thực hiện một chuỗi các tìm kiếm tuần tự trong một tab duy nhất để mô phỏng hành vi người dùng tự nhiên.
 - **Tùy chỉnh linh hoạt:**
   - Điều chỉnh **số lượng tìm kiếm** cho mỗi lần chạy.
@@ -50,7 +49,7 @@ Vì tiện ích này chưa được xuất bản trên Chrome Web Store, bạn c
 2.  **Trang Cài đặt:**
     - **Cài đặt chung:** Điều chỉnh số lượt tìm kiếm và cơ chế delay.
     - **Chủ đề tùy chỉnh:** Thêm danh sách từ khóa tìm kiếm của riêng bạn.
-    - **Lên lịch:** Chọn thời gian để tiện ích tự động chạy mỗi ngày.
+    - **Lên lịch:** Cấu hình chu kỳ (ngày, tuần, tháng, năm), thời gian nhắc nhở, và thời gian chờ (delay) trước khi thực hiện các tìm kiếm tiếp theo của lịch tự động.
     - **Giới thiệu:** Xem thông tin phiên bản và nhật ký thay đổi.
 
 ## 🛠️ Dành cho nhà phát triển (Development)

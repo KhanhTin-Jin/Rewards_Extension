@@ -22,6 +22,13 @@ const UI = {
       runLogsTable: document.querySelector('#runLogsTable tbody'),
       clearLogsBtn: document.getElementById('clearLogs'),
       resetSeenBtn: document.getElementById('resetSeen'),
+      enableSchedule: document.getElementById('enableSchedule'),
+      scheduleFrequency: document.getElementById('scheduleFrequency'),
+      scheduleTime: document.getElementById('scheduleTime'),
+      scheduleDelaySeconds: document.getElementById('scheduleDelaySeconds'),
+      scheduleSettingsDiv: document.getElementById('scheduleSettingsDiv'),
+      saveScheduleBtn: document.getElementById('saveSchedule'),
+      testNotificationBtn: document.getElementById('testNotificationBtn'),
     };
   },
 
@@ -60,7 +67,14 @@ const UI = {
     if (radio) radio.checked = true;
 
     this.elements.fixedDelaySettingDiv.style.display = selectedMode === 'fixed' ? 'block' : 'none';
-    // scheduleTime removed — scheduling is no longer supported
+
+    if (settings.enableSchedule !== undefined) this.elements.enableSchedule.checked = settings.enableSchedule;
+    this.elements.scheduleSettingsDiv.style.opacity = this.elements.enableSchedule.checked ? '1' : '0.5';
+    this.elements.scheduleSettingsDiv.style.pointerEvents = this.elements.enableSchedule.checked ? 'auto' : 'none';
+    
+    if (settings.scheduleFrequency) this.elements.scheduleFrequency.value = settings.scheduleFrequency;
+    if (settings.scheduleTime) this.elements.scheduleTime.value = settings.scheduleTime;
+    if (settings.scheduleDelaySeconds) this.elements.scheduleDelaySeconds.value = settings.scheduleDelaySeconds;
 
     // Render run logs if provided
     if (this.elements.runLogsTable && settings.runLogs && Array.isArray(settings.runLogs)) {
@@ -139,7 +153,7 @@ const App = {
     UI.init();
     this.bindEvents();
     UI.displayVersionAndSignature();
-    const settings = await Storage.load(['customTopics', 'tabsToOpen', 'delayMode', 'fixedDelaySeconds', 'runLogs']);
+    const settings = await Storage.load(['customTopics', 'tabsToOpen', 'delayMode', 'fixedDelaySeconds', 'runLogs', 'enableSchedule', 'scheduleFrequency', 'scheduleTime', 'scheduleDelaySeconds']);
     UI.populateSettings(settings);
   },
 
@@ -152,6 +166,16 @@ const App = {
       radio.addEventListener('change', (e) => {
         UI.elements.fixedDelaySettingDiv.style.display = e.target.value === 'fixed' ? 'block' : 'none';
       });
+    });
+    
+    UI.elements.enableSchedule.addEventListener('change', () => {
+       UI.elements.scheduleSettingsDiv.style.opacity = UI.elements.enableSchedule.checked ? '1' : '0.5';
+       UI.elements.scheduleSettingsDiv.style.pointerEvents = UI.elements.enableSchedule.checked ? 'auto' : 'none';
+    });
+    if (UI.elements.saveScheduleBtn) UI.elements.saveScheduleBtn.addEventListener('click', this.handleSaveSchedule.bind(this));
+    if (UI.elements.testNotificationBtn) UI.elements.testNotificationBtn.addEventListener('click', () => {
+      Storage.sendMessage({ action: 'testNotification' });
+      UI.showStatus('Đã gửi yêu cầu test Notification!');
     });
 
     if (UI.elements.clearLogsBtn) UI.elements.clearLogsBtn.addEventListener('click', this.handleClearLogs.bind(this));
@@ -213,6 +237,24 @@ const App = {
     // Remove seenTopics from storage
     await Storage.remove('seenTopics');
     UI.showStatus('Đã đặt lại danh sách chủ đề đã dùng.');
+  },
+  
+  async handleSaveSchedule() {
+    const enableSchedule = UI.elements.enableSchedule.checked;
+    const scheduleFrequency = UI.elements.scheduleFrequency.value;
+    const scheduleTime = UI.elements.scheduleTime.value; // "HH:MM"
+    const scheduleDelaySeconds = parseInt(UI.elements.scheduleDelaySeconds.value, 10);
+
+    if (enableSchedule && !scheduleTime) {
+      return UI.showStatus('Vui lòng chọn thời gian nhắc nhở.', 4000);
+    }
+    if (scheduleDelaySeconds < 1) {
+      return UI.showStatus('Thời gian delay không hợp lệ (phải lớn hơn 0).', 4000);
+    }
+
+    await Storage.save({ enableSchedule, scheduleFrequency, scheduleTime, scheduleDelaySeconds });
+    Storage.sendMessage({ action: 'updateSchedule' });
+    UI.showStatus('Cấu hình lên lịch đã được lưu!');
   },
   
 };

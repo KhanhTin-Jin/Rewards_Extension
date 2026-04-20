@@ -79,9 +79,9 @@ function sendStatus() {
  * @returns {Promise<object>} A promise that resolves to the settings object.
  */
 async function getSettings() {
-    const defaults = { tabsToOpen: 1, delayMode: 'immediate', fixedDelaySeconds: 5, customTopics: [] };
-    const settings = await chrome.storage.local.get(defaults);
-    return settings;
+    const defaults = { tabsToOpen: 1, delayMode: 'immediate', fixedDelaySeconds: 5, customTopics: [], scheduleDelaySeconds: 10 };
+    const settings = await chrome.storage.local.get(Object.keys(defaults));
+    return { ...defaults, ...settings };
 }
 
 /**
@@ -176,8 +176,9 @@ async function runSearchSession(selectedTopics, settings) {
 
 /**
  * Main orchestrator function to start the search process.
+ * @param {boolean} isScheduled - Indicates if run was triggered by background schedule.
  */
-const openTabs = async () => {
+const openTabs = async (isScheduled = false) => {
     if (isRunning) {
         console.log("A session is already running.");
         return;
@@ -189,6 +190,11 @@ const openTabs = async () => {
         console.log("Starting search session...");
 
         const settings = await getSettings();
+        if (isScheduled && settings.scheduleDelaySeconds) {
+            console.log("Applying scheduled delay override:", settings.scheduleDelaySeconds);
+            settings.delayMode = 'fixed';
+            settings.fixedDelaySeconds = settings.scheduleDelaySeconds;
+        }
 
         // Load persisted seenTopics and runLogs
         const storageData = await chrome.storage.local.get(['seenTopics', 'runLogs']);
@@ -262,10 +268,82 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log("Stop request queued.");
     } else if (request.action === "getStatus") {
         sendResponse({ isRunning, openedTabs, totalTabs });
+    } else if (request.action === "updateSchedule") {
+        updateSchedule();
+        sendResponse({ success: true });
+    } else if (request.action === "testNotification") {
+        triggerNotification();
+        sendResponse({ success: true });
+    } else if (request.action === "startScheduledRun") {
+        console.log("User accepted scheduled search via UI popup.");
+        openTabs(true);
+        sendResponse({ success: true });
     }
     return true; // Keep message channel open for async response
 });
-// Note: scheduling/manual time features removed per recent change request.
+
+// --- Scheduled Tasks & Notifications ---
+const SCHEDULE_ALARM_NAME = 'scheduleSearchAlarm';
+
+async function updateSchedule() {
+    const settings = await chrome.storage.local.get(['enableSchedule', 'scheduleFrequency', 'scheduleTime']);
+    await chrome.alarms.clear(SCHEDULE_ALARM_NAME);
+    
+    if (!settings.enableSchedule || !settings.scheduleTime) {
+        return;
+    }
+    
+    // settings.scheduleTime is now "YYYY-MM-DDTHH:mm" format
+    let nextDate = new Date(settings.scheduleTime);
+    
+    const now = new Date();
+    if (nextDate <= now) {
+        while (nextDate <= now) {
+            if (settings.scheduleFrequency === 'daily') {
+                nextDate.setDate(nextDate.getDate() + 1);
+            } else if (settings.scheduleFrequency === 'weekly') {
+                nextDate.setDate(nextDate.getDate() + 7);
+            } else if (settings.scheduleFrequency === 'monthly') {
+                nextDate.setMonth(nextDate.getMonth() + 1);
+            } else if (settings.scheduleFrequency === 'yearly') {
+                nextDate.setFullYear(nextDate.getFullYear() + 1);
+            }
+        }
+    }
+    
+    chrome.alarms.create(SCHEDULE_ALARM_NAME, { when: nextDate.getTime() });
+    console.log(`Schedule set for next run at: ${nextDate.toLocaleString()} (Freq: ${settings.scheduleFrequency})`);
+}
+
+function triggerNotification() {
+    chrome.windows.create({
+        url: 'confirm.html',
+        type: 'popup',
+        width: 420,
+        height: 220,
+        focused: true
+    });
+}
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === SCHEDULE_ALARM_NAME) {
+        triggerNotification();
+        updateSchedule(); // Schedule the next occurrence
+    }
+});
+
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+    if (notificationId === 'scheduleNotification') {
+        if (buttonIndex === 0) {
+            console.log("User accepted scheduled search.");
+            openTabs(true);
+        }
+        chrome.notifications.clear(notificationId);
+    }
+});
+
+// Note: scheduling/manual time features removed per recent change request. This block adds the NEW scheduling version.
 
 loadTopics();
+updateSchedule();
 console.log("Background script initialized.");
