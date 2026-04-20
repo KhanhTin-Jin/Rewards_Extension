@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Rewards Helper",
+  "version": "1.0",
+  "description": "Tự động hóa việc tìm kiếm hàng ngày trên Bing để tích điểm Microsoft Rewards một cách nhanh chóng và hiệu quả. Tùy chỉnh số lượng tab, chủ đề tìm kiếm, và thời gian chờ để phù hợp với nhu cầu của bạn.",
+  "icons": {
+    "128": "icon.svg"
+  },
+  "action": {
+    "default_icon": "icon.svg",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms"
+  ],
+  "options_page": "options.html"
+}

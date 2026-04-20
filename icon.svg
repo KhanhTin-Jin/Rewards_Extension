@@ -1,0 +1,11 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="20" fill="#0078D4"/>
+  <g transform="translate(15, 15) scale(0.7)">
+    <!-- Magnifying glass handle -->
+    <path d="M80.8891 80.8891L64.2224 64.2224" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Magnifying glass lens -->
+    <circle cx="45" cy="45" r="28" stroke="white" stroke-width="10"/>
+    <!-- Star for 'Reward' -->
+    <path d="M45.0001 56.5L36.2021 61.4164L37.9001 51.7082L30.8002 44.9164L40.6011 43.5832L45.0001 34.5L49.3991 43.5832L59.2001 44.9164L52.1001 51.7082L53.7981 61.4164L45.0001 56.5Z" fill="#FFD700"/>
+  </g>
+</svg>

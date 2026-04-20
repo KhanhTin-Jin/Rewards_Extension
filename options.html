@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Cài đặt Rewards Helper</title>
+  <style>
+    /* Đồng bộ biến màu sắc với popup */
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --success-hover: #059669;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --surface: #ffffff;
+      --background: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --focus-ring: rgba(79, 70, 229, 0.2);
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--background);
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      color: var(--text-main);
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: 260px;
+      background-color: var(--surface);
+      padding: 24px 16px;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      color: var(--primary);
+      margin: 0 0 32px 0;
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .sidebar h2::before {
+      content: "⚙️";
+    }
+
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar nav li a {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .sidebar nav li a:hover {
+      background-color: var(--background);
+      color: var(--text-main);
+      transform: translateX(4px);
+    }
+
+    .sidebar nav li a.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .sidebar nav li a.active::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .signature {
+      margin-top: auto;
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--text-muted);
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* --- CONTENT AREA --- */
+    .content {
+      flex-grow: 1;
+      padding: 40px 60px;
+      overflow-y: auto;
+      background-color: var(--background);
+    }
+
+    h1 { 
+      color: var(--text-main); 
+      font-size: 24px;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .form-group { 
+      margin-bottom: 28px; 
+      background: var(--surface);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      border: 1px solid var(--border);
+    }
+
+    label { 
+      display: block; 
+      margin-bottom: 10px; 
+      font-weight: 600; 
+      color: var(--text-main); 
+    }
+
+    .help-text {
+      font-size: 0.85em; 
+      color: var(--text-muted); 
+      margin-top: 6px;
+    }
+
+    /* --- INPUTS & BUTTONS --- */
+    input[type="file"], input[type="number"], input[type="time"], textarea { 
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1px solid var(--border); 
+      box-sizing: border-box; 
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background-color: var(--background);
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+      background-color: var(--surface);
+    }
+
+    button { 
+      padding: 12px 20px; 
+      font-weight: 600; 
+      color: #fff; 
+      background-color: var(--primary); 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    button:hover {
+      background-color: #4338ca;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+    .btn-danger:hover { background-color: var(--danger-hover); box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3); }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn-outline:hover { background-color: var(--background); box-shadow: none; }
+
+    /* --- RADIO BUTTONS --- */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .radio-group label { 
+      display: flex; 
+      align-items: center;
+      font-weight: normal; 
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 10px;
+      accent-color: var(--primary);
+      width: 18px; height: 18px;
+    }
+
+    .sub-setting { 
+      margin-left: 28px; 
+      margin-top: 12px; 
+      display: none; 
+      padding: 12px;
+      background-color: var(--background);
+      border-radius: 8px;
+      border-left: 3px solid var(--primary);
+    }
+
+    /* --- TABLES (Logs) --- */
+    .table-container {
+      overflow: auto; 
+      max-height: 400px; 
+      border: 1px solid var(--border); 
+      background: var(--surface); 
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    table {
+      width: 100%; 
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left; 
+      padding: 12px 16px; 
+      border-bottom: 2px solid var(--border);
+      background-color: var(--background);
+      color: var(--text-muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    tbody tr:hover {
+      background-color: var(--background);
+    }
+
+    /* --- ANIMATIONS & STATES --- */
+    .content-section { 
+      display: none; 
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .content-section.active { 
+      display: block; 
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #status { 
+      position: fixed; 
+      bottom: 20px; 
+      right: 40px; 
+      background: var(--success); 
+      color: white; 
+      padding: 12px 24px; 
+      border-radius: 8px; 
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+      display: none;
+      font-weight: 600;
+      z-index: 100;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Rewards Helper</h2>
+    <nav id="sidebar-nav">
+      <ul>
+        <li><a href="#" data-section="general" class="active">🛠 Cài đặt chung</a></li>
+        <li><a href="#" data-section="topics">📝 Chủ đề tùy chỉnh</a></li>
+        <li><a href="#" data-section="logs">🕒 Nhật ký</a></li>
+        <li><a href="#" data-section="about">ℹ️ Giới thiệu</a></li>
+      </ul>
+    </nav>
+    <div id="signature" class="signature"></div>
+  </aside>
+
+  <main class="content">
+    
+    <div id="general" class="content-section active">
+      <h1>Cài đặt chung</h1>
+      
+      <div class="form-group">
+        <label for="tabsToOpen">Số lượt tìm kiếm mỗi lần chạy</label>
+        <input type="number" id="tabsToOpen" min="1" max="100" value="1">
+        <div class="help-text">Một tab sẽ được mở và tự động điều hướng tuần tự qua các tìm kiếm.</div>
+      </div>
+      
+      <div class="form-group">
+        <label>Cơ chế delay khi mở tab</label>
+        <div class="radio-group">
+          <label><input type="radio" name="delayMode" value="immediate" checked> Mở ngay lập tức</label>
+          <label><input type="radio" name="delayMode" value="fixed"> Delay cố định</label>
+          <label><input type="radio" name="delayMode" value="random"> Delay ngẫu nhiên (5-20s)</label>
+        </div>
+        <div id="fixedDelaySetting" class="sub-setting">
+          <label for="fixedDelaySeconds">Số giây delay:</label>
+          <input type="number" id="fixedDelaySeconds" min="1" value="5">
+        </div>
+      </div>
+      
+      <button id="save">Lưu Cài đặt chung</button>
+    </div>
+
+    <div id="topics" class="content-section">
+      <h1>Chủ đề tùy chỉnh</h1>
+      
+      <div class="form-group">
+          <label for="customTopicsArea">Danh sách chủ đề (mỗi chủ đề một dòng):</label>
+          <textarea id="customTopicsArea" rows="12"></textarea>
+          <button id="saveCustomTopics" style="margin-top: 16px;">Lưu danh sách</button>
+      </div>
+      
+      <div class="form-group">
+        <label for="customTopicsFile">Hoặc tải lên danh sách từ tệp (.txt):</label>
+        <input type="file" id="customTopicsFile" accept=".txt">
+      </div>
+    </div>
+
+    <div id="logs" class="content-section">
+      <h1>Nhật ký hoạt động (7 ngày)</h1>
+      
+      <div class="form-group">
+        <label>Danh sách phiên đã chạy (thời gian, số lượt, chủ đề):</label>
+        <div class="table-container">
+          <table id="runLogsTable">
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Số lượt</th>
+                <th>Chủ đề</th>
+              </tr>
+            </thead>
+            <tbody>
+              </tbody>
+          </table>
+        </div>
+        <div style="margin-top: 16px; display: flex; gap: 10px;">
+          <button id="clearLogs" class="btn-danger">Xóa nhật ký</button>
+          <button id="resetSeen" class="btn-outline">Đặt lại chủ đề đã dùng</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="about" class="content-section">
+      <h1>Giới thiệu & Nhật ký thay đổi</h1>
+      
+      <div class="form-group">
+        <label>Phiên bản hiện tại</label>
+        <p id="version-display" style="color: var(--primary); font-weight: bold; margin: 0;">Đang tải...</p>
+      </div>
+      
+      <div class="form-group">
+        <label>Nhật ký thay đổi (Changelog)</label>
+        <ul style="padding-left: 20px; line-height: 1.6; color: var(--text-main);">
+          <li><strong>v1.0 (Hiện tại):</strong> Cập nhật giao diện Modern UI, tối ưu hoá trải nghiệm người dùng, làm mượt các hiệu ứng chuyển cảnh.</li>
+          <li><strong>v0.1:</strong> Phiên bản đầu tiên, hỗ trợ tìm kiếm tuần tự, tùy chỉnh chủ đề, delay.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="status">Đã lưu cài đặt thành công!</div>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+</html>

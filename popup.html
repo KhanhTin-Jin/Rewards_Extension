@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Rewards Helper</title>
+  <style>
+      /* Khai báo biến màu sắc để dễ quản lý */
+      :root {
+          --primary: #4f46e5;
+          --success: #10b981;
+          --success-hover: #059669;
+          --danger: #ef4444;
+          --danger-hover: #dc2626;
+          --surface: #ffffff;
+          --background: #f8fafc;
+          --text-main: #0f172a;
+          --text-muted: #64748b;
+          --border: #e2e8f0;
+      }
+
+      body {
+          /* Tăng nhẹ chiều rộng để không gian thoáng hơn */
+          width: 280px; 
+          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          margin: 0;
+          background-color: var(--background);
+          display: flex;
+          justify-content: center;
+      }
+
+      .container {
+          width: 100%;
+          box-sizing: border-box;
+          background-color: var(--surface);
+          padding: 24px 20px;
+          text-align: center;
+          /* Bóng đổ mềm mại tạo chiều sâu */
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+      }
+
+      h3 {
+          margin: 0 0 18px 0;
+          color: var(--text-main);
+          font-size: 18px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+      }
+
+      /* Thêm icon 🎁 trực tiếp bằng CSS (hoặc bạn có thể xóa nếu không thích) */
+      h3::before {
+          content: "🎁";
+          font-size: 20px;
+      }
+
+      .status-box {
+          background-color: var(--background);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 20px;
+          min-height: 48px;
+          transition: all 0.3s ease;
+      }
+
+      .status-box:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      }
+
+      #statusDisplay {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--primary);
+          letter-spacing: 0.3px;
+      }
+
+      /* Progress Bar Styling */
+      #progressWrap {
+          margin-top: 12px;
+      }
+
+      .progress-track {
+          height: 8px;
+          background: #e2e8f0;
+          border-radius: 999px;
+          overflow: hidden;
+          box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      }
+
+      #progressBar {
+          height: 100%;
+          width: 0%; /* Mặc định là 0, điều khiển bằng JS */
+          /* Dùng gradient cho thanh tiến trình sinh động hơn */
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          border-radius: 999px;
+          /* Hiệu ứng smooth khi thanh tiến trình tăng/giảm */
+          transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+      }
+
+      /* Hiệu ứng ánh sáng lấp lánh chạy dọc thanh progress */
+      #progressBar::after {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; bottom: 0; right: 0;
+          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+          animation: shimmer 1.5s infinite linear;
+      }
+
+      @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+      }
+
+      #progressText {
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--text-muted);
+          margin-top: 8px;
+      }
+
+      /* Buttons */
+      .button-group {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 10px;
+      }
+
+      button {
+          flex-grow: 1;
+          padding: 12px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          /* Hiệu ứng mượt mà khi hover và click */
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      button:active {
+          transform: scale(0.96); /* Lõm xuống khi click */
+      }
+
+      #startBtn {
+          background-color: var(--success);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+      }
+
+      #startBtn:hover {
+          background-color: var(--success-hover);
+          box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+          transform: translateY(-2px); /* Nổi lên khi hover */
+      }
+
+      #stopBtn {
+          background-color: var(--danger);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+          display: none; /* Mặc định ẩn, điều khiển qua JS */
+      }
+
+      #stopBtn:hover {
+          background-color: var(--danger-hover);
+          box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+          transform: translateY(-2px);
+      }
+
+      #optionsBtn {
+          background-color: transparent;
+          color: var(--text-muted);
+          border: 1px solid var(--border);
+          width: 100%;
+          box-shadow: none;
+      }
+
+      #optionsBtn:hover {
+          background-color: var(--background);
+          color: var(--text-main);
+          border-color: #cbd5e1;
+      }
+
+      button:disabled {
+          background-color: #cbd5e1 !important;
+          box-shadow: none !important;
+          transform: none !important;
+          cursor: not-allowed;
+          color: #94a3b8;
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <h3>Rewards Helper</h3>
+      
+      <div class="status-box">
+          <div id="statusDisplay">Đang tải...</div>
+          
+          <div id="progressWrap" style="display: block;"> <div class="progress-track">
+                  <div id="progressBar" style="width: 45%;"></div> </div>
+              <div id="progressText">0/0</div>
+          </div>
+      </div>
+      
+      <div class="button-group">
+          <button id="startBtn">Bắt đầu</button>
+          <button id="stopBtn">Dừng lại</button>
+      </div>
+      
+      <div class="button-group" style="margin-bottom: 0;">
+          <button id="optionsBtn">⚙️ Cài đặt</button>
+      </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
