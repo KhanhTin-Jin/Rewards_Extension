@@ -75,5 +75,5 @@ Mọi đóng góp để cải thiện dự án đều được hoan nghênh. Vui
 ---
 
 
-<p align="center">Rewards Helper fork by KhanhTin-Jin (Jin) - original by minibom4 - Version 1.0</p>
+<p align="center">Rewards Helper fork by KhanhTin-Jin (Jin) - original by minibom4 - Version 1.1</p>
 
